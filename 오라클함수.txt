@@ -1,0 +1,45 @@
+create or replace FUNCTION student_login(
+    a_studentid         students.studentid%TYPE,
+    a_studentpassword   students.studentpassword%TYPE
+) RETURN PLS_INTEGER
+IS
+    v_studentpassword   students.studentpassword%TYPE;
+    v_result  PLS_INTEGER;
+BEGIN
+    SELECT studentpassword  INTO v_studentpassword
+    FROM students
+    WHERE studentid = a_studentid;
+
+    IF v_studentpassword = a_studentpassword THEN
+        RETURN 0;
+    ELSE
+        RETURN 1;
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND  THEN
+    RETURN 2;
+END;
+
+
+
+create or replace FUNCTION staff_login(
+    a_staffid         staffs.staffid%TYPE,
+    a_staffpassword   staffs.staffpassword%TYPE
+) RETURN PLS_INTEGER
+IS
+    v_staffpassword   staffs.staffpassword%TYPE;
+    v_result  PLS_INTEGER;
+BEGIN
+    SELECT staffpassword  INTO v_staffpassword
+    FROM staffs
+    WHERE staffid = a_staffid;
+
+    IF v_staffpassword = a_staffpassword THEN
+        RETURN 0;
+    ELSE
+        RETURN 1;
+    END IF;
+EXCEPTION
+    WHEN NO_DATA_FOUND  THEN
+    RETURN 2;
+END;
