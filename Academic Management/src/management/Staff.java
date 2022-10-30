@@ -8,9 +8,10 @@ import java.util.ArrayList;
 public class Staff extends Person{
 	private int staffNo;
 	
-	public Staff(String name, int age,  String email,
-			String id, String password, int staffNo) {
-		super(name,  age,  email,id, password);
+	public Staff(String id, String password,
+			String name, int age,  String email,
+			 int staffNo) {
+		super(id, password, name,  age,  email);
 		this.staffNo=staffNo;
 	}
 	

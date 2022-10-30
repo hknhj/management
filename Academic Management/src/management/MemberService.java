@@ -14,12 +14,4 @@ public class MemberService {
 		this.password=password;
 		this.person=person;
 	}
-	
-	public void login(String id, String password, Person person) {
-		if(person instanceof Student) {
-			
-		} else if(person instanceof Staff) {
-			
-		}
-	}
 }

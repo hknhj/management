@@ -12,57 +12,33 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Management {
-	
+	//우선 로그인 기능 구현하기
 	private Scanner scanner = new Scanner(System.in);
-	private Connection conn; 
-	private Map<Integer, Student> studentMap = new HashMap<>();
-	private Map<Integer, Staff> staffMap = new HashMap<>();
+//	private Connection conn; 
+//	private Map<Integer, Student> studentMap = new HashMap<>();
+//	private Map<Integer, Staff> staffMap = new HashMap<>();
 	
 	public void login() {
-		System.out.println("[로그인]");
-		System.out.println("아이디: ");
-		String id = scanner.nextLine();
-		System.out.println("비밀번호: ");
-		String password = scanner.nextLine();
-		
-		int result = check(id, password);
-
-		if(result==0) {
-			//login(id, password);
-			//로그인
-		} else if(result==1) {
-			System.out.println("비밀번호가 일치하지 않습니다.");
-			System.out.println();
-			login();
-		} else {
-			System.out.println("아이디가 존재하지 않습니다.");
-			System.out.println();
-			login();
+		Login login = new Login();
+		while(true) {
+			//배너 출력하기
+			Banner.banner();
+			System.out.print("입력: ");
+			String option = scanner.nextLine();
+			if(option.equals("1")) {
+				login.login();
+			} else if(option.equals("2")) {
+				login.join();
+			} else {
+				System.out.println("프로그램을 종료합니다.");
+				break;
+			}
 		}
-			
 	}
 	
-	public int check(String id, String password) {
-		int result=2;
-		try {
-			String sql = "{? = call user_login(?, ?)}";
-			
-			CallableStatement cstmt = conn.prepareCall(sql);
-			cstmt.registerOutParameter(1, Types.INTEGER);
-			cstmt.setString(2, id);
-			cstmt.setString(3, password);
-			
-			cstmt.execute();
-			result=cstmt.getInt(1);
-			System.out.println("result: "+result);
-			
-			cstmt.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("result: "+result);
-		return result;
-	
+	public static void main(String[] args) {
+		Management management = new Management();
+		management.login();
 	}
+	
 }

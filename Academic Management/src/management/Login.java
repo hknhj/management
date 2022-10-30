@@ -13,13 +13,12 @@ import java.sql.ResultSet;
 public class Login {
 	
 	Scanner scanner = new Scanner(System.in);
-	Connection conn=null;
+	Connection conn;
 	
 	
 	public void login() {
-		connect(); 
 		System.out.println("[로그인]");
-
+		
 		try {
 			while(true) {
 				System.out.print("아이디: ");
@@ -28,12 +27,27 @@ public class Login {
 				String password = scanner.nextLine();
 				
 				int result = check(id ,password);
+				System.out.println(result);
 				
 				if(result==0) {
 					Student student = getInfo(id);
+					if(student!=null) {
+						System.out.println(student.getName()+"님이 로그인했습니다.");
+					} else {
+						System.out.println("로그인 정보가 없습니다.");
+					}
+					break;
+				} else if(result==1) {
+					System.out.println("비밀번호가 일치하지 않습니다.");
+					System.out.println();
+				} else {
+					System.out.println("아이디가 존재하지 않습니다.");
+					System.out.println();
 				}
 			}
 			
+		} catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -48,7 +62,7 @@ public class Login {
 				System.out.print("아이디: ");
 				id = scanner.nextLine();
 				String sql = ""+
-					"SELECT*"+"FROM students"+"WHERE studentid = ?";
+					"SELECT * "+"FROM students "+"WHERE studentid = ?";
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, id);
 				
@@ -57,7 +71,9 @@ public class Login {
 					System.out.println("이미 존재하는 아이디입니다. 다시 입력하세요.");
 					System.out.println();
 				} else {
+
 					rs.close();
+					pstmt.close();
 					break;
 				}
 			}
@@ -75,7 +91,7 @@ public class Login {
 			scanner.nextLine();
 			
 			String sql_insert = ""+
-				"INSERT INTO students(studentid, studentpassword, studentname, studentage, studentemail, studentno"+
+				"INSERT INTO students(studentid, studentpassword, studentname, studentage, studentemail, studentno)"+
 				"VALUES(?,?,?,?,?,?)";
 			PreparedStatement pstmt = conn.prepareStatement(sql_insert);
 			pstmt.setString(1, id);
@@ -97,8 +113,9 @@ public class Login {
 	
 	public int check(String id, String password) {
 		int result=2;
+		connect();
 		try {
-			String sql = "{? = call user_login(?, ?)}";
+			String sql = "{? = call student_login(?, ?)}";
 			
 			CallableStatement cstmt = conn.prepareCall(sql);
 			cstmt.registerOutParameter(1, Types.INTEGER);
@@ -107,14 +124,15 @@ public class Login {
 			
 			cstmt.execute();
 			result=cstmt.getInt(1);
-			System.out.println("result: "+result);
+			//System.out.println("result: "+result);
 			
 			cstmt.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		//System.out.println("result: "+result);
+		unconnect();
+		
 		return result;
 	
 	}
@@ -122,25 +140,31 @@ public class Login {
 	public Student getInfo(String id) {
 		connect();
 		
+		Student student=null;
+		
 		try {
-			String sql = ""+"SELECT studentid, studentpassword, studentname, studentage, studentemail, studentno"+
-					"FROM students"+"WHERE studentid = ?";
+			String sql = ""+"SELECT * "+
+					"FROM students "+"WHERE studentid = ?";
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			
 			ResultSet rs = pstmt.executeQuery();
 			if(rs.next()) {
-				Student student = new Student();
+				student = new Student();
 				student.setId(id);
 				student.setPassword(rs.getString("studentpassword"));
 				student.setName(rs.getString("studentname"));
 				student.setAge(rs.getInt("studentage"));
 				student.setEmail(rs.getString("studentemail"));
 				student.setStudentNo(rs.getInt("studentno"));
-				return student;
 			}
 		} catch(SQLException e) {
+			e.printStackTrace();
 		}
+		
+		unconnect();
+		
+		return student;
 		
 	}
 		
