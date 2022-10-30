@@ -14,9 +14,10 @@ public class Login {
 	
 	Scanner scanner = new Scanner(System.in);
 	Connection conn;
+	Object object;
 	
 	
-	public void login() {
+	public void login(String option) {
 		System.out.println("[로그인]");
 		
 		try {
@@ -25,16 +26,26 @@ public class Login {
 				String id = scanner.nextLine();
 				System.out.print("비밀번호: ");
 				String password = scanner.nextLine();
+
+				int result = check(id ,password, option);
 				
-				int result = check(id ,password);
-				System.out.println(result);
-				
-				if(result==0) {
-					Student student = getInfo(id);
-					if(student!=null) {
-						System.out.println(student.getName()+"님이 로그인했습니다.");
-					} else {
-						System.out.println("로그인 정보가 없습니다.");
+				if(result == 0) {
+					if(option.equals("1")) {
+						Student student = student_getInfo(id);
+						if(student!=null) {
+							System.out.println(student.getName()+"님이 로그인 했습니다.");
+						} else {
+							System.out.println("로그인 정보가 없습니다.");
+						}
+						
+					} else if(option.equals("2")) {
+
+						Staff staff = staff_getInfo(id);
+						if(staff!=null) {
+							System.out.println(staff.getName()+"님이 로그인했습니다.");
+						} else {
+							System.out.println("로그인 정보가 없습니다.");
+						}
 					}
 					break;
 				} else if(result==1) {
@@ -50,19 +61,23 @@ public class Login {
 			e.printStackTrace();
 		}
 	}
-
 	
-	public void join() {
+	public void join(String option) {
 		connect();
 		System.out.println("[회원 가입]");
 		String id;
 		try {
 			while(true) {
-
+				String sql;
 				System.out.print("아이디: ");
 				id = scanner.nextLine();
-				String sql = ""+
-					"SELECT * "+"FROM students "+"WHERE studentid = ?";
+				if(option.equals("1")) {
+					sql = ""+
+							"SELECT * "+"FROM students "+"WHERE studentid = ?";
+				} else {
+					sql = ""+
+							"SELECT * "+"FROM staffs "+"WHERE staffid = ?";
+				}
 				PreparedStatement pstmt = conn.prepareStatement(sql);
 				pstmt.setString(1, id);
 				
@@ -86,20 +101,29 @@ public class Login {
 			scanner.nextLine();
 			System.out.print("이메일: ");
 			String email = scanner.nextLine();
-			System.out.print("학번: ");
-			int studentNo = scanner.nextInt();
+			System.out.print("고유번호: ");
+			int no = scanner.nextInt();
 			scanner.nextLine();
 			
-			String sql_insert = ""+
-				"INSERT INTO students(studentid, studentpassword, studentname, studentage, studentemail, studentno)"+
-				"VALUES(?,?,?,?,?,?)";
+			
+			String sql_insert;
+			if(option.equals("1")) {
+				sql_insert = ""+
+					"INSERT INTO students(studentid, studentpassword, studentname, studentage, studentemail, studentno)"+
+					"VALUES(?,?,?,?,?,?)";
+			} else {
+				sql_insert = ""+
+					"INSERT INTO staffs(staffid, staffpassword, staffname, staffage, staffemail, staffno)"+
+					"VALUES(?,?,?,?,?,?)";
+			}
+				
 			PreparedStatement pstmt = conn.prepareStatement(sql_insert);
 			pstmt.setString(1, id);
 			pstmt.setString(2, password);
 			pstmt.setString(3, name);
 			pstmt.setInt(4, age);
 			pstmt.setString(5, email);
-			pstmt.setInt(6, studentNo);
+			pstmt.setInt(6, no);
 			
 			pstmt.executeUpdate();
 			
@@ -111,11 +135,16 @@ public class Login {
 		}
 	}
 	
-	public int check(String id, String password) {
+	public int check(String id, String password, String option) {
 		int result=2;
 		connect();
 		try {
-			String sql = "{? = call student_login(?, ?)}";
+			String sql=null;
+			if(option.equals("1")) {
+				sql = "{? = call student_login(?, ?)}";
+			} else if(option.equals("2")) {
+				sql = "{? = call staff_login(?, ?)}";
+			}
 			
 			CallableStatement cstmt = conn.prepareCall(sql);
 			cstmt.registerOutParameter(1, Types.INTEGER);
@@ -124,8 +153,7 @@ public class Login {
 			
 			cstmt.execute();
 			result=cstmt.getInt(1);
-			//System.out.println("result: "+result);
-			
+
 			cstmt.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -137,14 +165,15 @@ public class Login {
 	
 	}
 	
-	public Student getInfo(String id) {
+	public Student student_getInfo(String id) {
 		connect();
 		
 		Student student=null;
 		
 		try {
 			String sql = ""+"SELECT * "+
-					"FROM students "+"WHERE studentid = ?";
+				"FROM students "+"WHERE studentid = ?";
+			
 			PreparedStatement pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			
@@ -167,6 +196,39 @@ public class Login {
 		return student;
 		
 	}
+	
+	public Staff staff_getInfo(String id) {
+		connect();
+		
+		Staff staff=null;
+		
+		try {
+			String sql = ""+"SELECT * "+
+				"FROM staffs "+"WHERE staffid = ?";
+			
+			PreparedStatement pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, id);
+			
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()) {
+				staff = new Staff();
+				staff.setId(id);
+				staff.setPassword(rs.getString("staffpassword"));
+				staff.setName(rs.getString("staffname"));
+				staff.setAge(rs.getInt("staffage"));
+				staff.setEmail(rs.getString("staffemail"));
+				staff.setStaffNo(rs.getInt("staffno"));
+			}
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		unconnect();
+		
+		return staff;
+	}
+	
+	
 		
 	public void connect() {
 		try {

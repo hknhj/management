@@ -25,14 +25,42 @@ public class Management {
 			Banner.banner();
 			System.out.print("입력: ");
 			String option = scanner.nextLine();
-			if(option.equals("1")) {
-				login.login();
-			} else if(option.equals("2")) {
-				login.join();
+			System.out.println();
+			Banner.banner_person(option);
+			System.out.print("입력: ");
+			String option_person = scanner.nextLine();
+			if(option_person.equals("1")) {
+				login.login(option);
+				break;
+			} else if(option_person.equals("2")) {
+				login.join(option);
 			} else {
 				System.out.println("프로그램을 종료합니다.");
 				break;
 			}
+//			if(option.equals("1")) {
+//				Banner.banner_student();
+//				System.out.print("입력: ");
+//				String option_student=scanner.nextLine();
+//				if(option_student.equals("1")) {
+//					login.login(option);
+//				} else if(option_student.equals("2")) {
+//					login.join(option);
+//				} else {
+//					System.out.println("프로그램을 종료합니다.");
+//					break;
+//				}
+//			} else if(option.equals("2")) {
+//				Banner.banner_staff();
+//				System.out.print("입력: ");
+//				String option_staff=scanner.nextLine();
+//				if(option_staff.equals("1")) {
+//					login.login(option);
+//				} else if(option_staff.equals("2")) {
+//					login.join(option);
+//				} else {
+//					System.out
+//				}
 		}
 	}
 	

@@ -8,6 +8,10 @@ import java.util.ArrayList;
 public class Staff extends Person{
 	private int staffNo;
 	
+	public Staff() {
+		super();
+	}
+	
 	public Staff(String id, String password,
 			String name, int age,  String email,
 			 int staffNo) {
