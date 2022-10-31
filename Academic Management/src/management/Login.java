@@ -17,49 +17,57 @@ public class Login {
 	Object object;
 	
 	
-	public void login(String option) {
+	public int login(String option) {
+		int logined=0;
 		System.out.println("[로그인]");
 		
 		try {
-			while(true) {
-				System.out.print("아이디: ");
-				String id = scanner.nextLine();
-				System.out.print("비밀번호: ");
-				String password = scanner.nextLine();
+			System.out.print("아이디: ");
+			String id = scanner.nextLine();
+			System.out.print("비밀번호: ");
+			String password = scanner.nextLine();
 
-				int result = check(id ,password, option);
-				
-				if(result == 0) {
-					if(option.equals("1")) {
-						Student student = student_getInfo(id);
-						if(student!=null) {
-							System.out.println(student.getName()+"님이 로그인 했습니다.");
-						} else {
-							System.out.println("로그인 정보가 없습니다.");
-						}
-						
-					} else if(option.equals("2")) {
-
-						Staff staff = staff_getInfo(id);
-						if(staff!=null) {
-							System.out.println(staff.getName()+"님이 로그인했습니다.");
-						} else {
-							System.out.println("로그인 정보가 없습니다.");
-						}
+			int result = check(id ,password, option);
+			
+			if(result == 0) {
+				if(option.equals("1")) {
+					//학생에 대한 정보 얻기
+					Student student = student_getInfo(id);
+					if(student!=null) {
+						System.out.println(student.getName()+"님이 로그인 했습니다.");
+					} else {
+						System.out.println("로그인 정보가 없습니다.");
 					}
-					break;
-				} else if(result==1) {
+					
+				} else if(option.equals("2")) {
+					//직원에 대한 정보 얻기
+					Staff staff = staff_getInfo(id);
+					if(staff!=null) {
+						System.out.println(staff.getName()+"님이 로그인 했습니다.");
+					} else {
+						System.out.println("로그인 정보가 없습니다.");
+					}
+				}
+				logined=1;
+			} else {
+				if(result==1) {
 					System.out.println("비밀번호가 일치하지 않습니다.");
 					System.out.println();
-				} else {
+					sub();
+				} else if(result==2) {
 					System.out.println("아이디가 존재하지 않습니다.");
 					System.out.println();
 				}
+				logined=0;
 			}
+			
+
 			
 		} catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		return logined;
 	}
 	
 	public void join(String option) {
@@ -163,6 +171,14 @@ public class Login {
 		
 		return result;
 	
+	}
+	
+	public String sub() {
+		Banner.banner_sub();
+		System.out.print("입력: ");
+		String option = scanner.nextLine();
+		return option;
+
 	}
 	
 	public Student student_getInfo(String id) {

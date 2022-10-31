@@ -14,12 +14,11 @@ import java.util.HashMap;
 public class Management {
 	//우선 로그인 기능 구현하기
 	private Scanner scanner = new Scanner(System.in);
-//	private Connection conn; 
-//	private Map<Integer, Student> studentMap = new HashMap<>();
-//	private Map<Integer, Staff> staffMap = new HashMap<>();
+
 	
 	public void login() {
 		Login login = new Login();
+		int logined=0;
 		while(true) {
 			//배너 출력하기
 			Banner.banner();
@@ -30,37 +29,19 @@ public class Management {
 			System.out.print("입력: ");
 			String option_person = scanner.nextLine();
 			if(option_person.equals("1")) {
-				login.login(option);
-				break;
+				logined=login.login(option);
+				if(logined==1) {
+					break;
+				} else {
+					continue;
+				}
+			
 			} else if(option_person.equals("2")) {
 				login.join(option);
 			} else {
 				System.out.println("프로그램을 종료합니다.");
 				break;
 			}
-//			if(option.equals("1")) {
-//				Banner.banner_student();
-//				System.out.print("입력: ");
-//				String option_student=scanner.nextLine();
-//				if(option_student.equals("1")) {
-//					login.login(option);
-//				} else if(option_student.equals("2")) {
-//					login.join(option);
-//				} else {
-//					System.out.println("프로그램을 종료합니다.");
-//					break;
-//				}
-//			} else if(option.equals("2")) {
-//				Banner.banner_staff();
-//				System.out.print("입력: ");
-//				String option_staff=scanner.nextLine();
-//				if(option_staff.equals("1")) {
-//					login.login(option);
-//				} else if(option_staff.equals("2")) {
-//					login.join(option);
-//				} else {
-//					System.out
-//				}
 		}
 	}
 	

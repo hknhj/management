@@ -7,6 +7,7 @@ public class Banner {
 		System.out.println("--------------------");
 		
 	}
+	
 	public static void banner_person(String option) {
 		if(option.equals("1")) {
 			System.out.println("----------------------------");
@@ -23,5 +24,11 @@ public class Banner {
 			System.out.println("----------------------------");
 		}
 		
+	}
+	
+	public static void banner_sub() {
+		System.out.println("-----------------");
+		System.out.println("1.Back | 2.Exit");
+		System.out.println("-----------------");
 	}
 }
